@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 00:26:57 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/14 00:32:03 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:23:49 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -17,8 +17,9 @@ static bool	check_philosopher_death(t_data *data, int i)
 	long	time_since_meal;
 
 	current_time = get_time();
+	pthread_mutex_lock(&data->death_mutex);
 	time_since_meal = current_time - data->philos[i].last_meal;
-	
+	pthread_mutex_unlock(&data->death_mutex);
 	if (time_since_meal >= data->time_to_die)
 	{
 		pthread_mutex_lock(&data->death_mutex);

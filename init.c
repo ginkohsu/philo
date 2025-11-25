@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 21:59:50 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/14 01:08:43 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:43:24 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,22 +45,25 @@ bool	init_mutexes(t_data *data)
 		{
 			while ( --i >= 0)
 				pthread_mutex_destroy(&data->forks[i]);
-				free(data->forks);
-				return (false);
+			free(data->forks);
+			return (false);
 		}
 		i++;
 	}
-	pthread_mutex_init(&data->print_mutex,NULL);
-	pthread_mutex_init(&data->death_mutex,NULL);
+	if (pthread_mutex_init(&data->print_mutex,NULL) !=  0)
+		return (false);
+	if (pthread_mutex_init(&data->death_mutex,NULL) != 0)
+		return (false);
+	return (true);
 }
 
-void	init_philosophers(t_data *data)
+bool	init_philosophers(t_data *data)
 {
 	int	i;
 
 	data->philos = malloc(sizeof(t_philo) * data->num_philos);
 	if (!data->philos)
-		return (NULL);
+		return (false);
 	i = 0;
 	while (i < data->num_philos)
 	{
@@ -72,6 +75,7 @@ void	init_philosophers(t_data *data)
 		data->philos[i].data = data;
 		i++;
 	}
+	return (true);
 }
 /* The % data->num_philos makes sure the last philosopher's right fork
  is the first philosopher's left fork (circular table).*/
@@ -95,8 +99,10 @@ t_data	*init_data(int argc, char **argv)
 	data->simulation_end = false;
 	data->start_time = get_time();
 
-	init_mutexes(data);
-	init_philosophers(data);
-	
+	if(!init_mutexes(data) || !init_philosophers(data))
+	{
+		cleanup(data);
+		return (NULL);
+	}
 	return (data);
 }

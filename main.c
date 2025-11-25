@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 23:28:48 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/14 00:47:04 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:44:44 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -48,15 +48,25 @@ int main(int argc, char **argv) {
 	if (!validate_arguments(argc, argv))
 		return 1;
     data = init_data(argc, argv);
-    
+	if (!data)
+	return 1;
     i = 0;
 	while (i < data->num_philos)
 	{
-        pthread_create(&data->philos[i].thread, NULL, 
-                      philo_routine, &data->philos[i]);
+       if(pthread_create(&data->philos[i].thread, NULL, 
+                      philo_routine, &data->philos[i]) != 0)
+		{
+			data->simulation_end = true;
+			return(cleanup(data), 1);
+		}
 		i++;
     }
-    pthread_create(&monitor_thread, NULL, monitor_routine, data); 
+	if(pthread_create(&monitor_thread, NULL, monitor_routine, data)
+			!= 0)
+		{
+			data->simulation_end = true;
+			return(cleanup(data), 1);
+		}
     i = 0;
 	while (i < data->num_philos)
 	{

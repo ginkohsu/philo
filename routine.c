@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 22:33:11 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/14 00:26:15 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:39:32 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -36,13 +36,17 @@ static void	philosopher_eat(t_philo *philo)
 		first_fork = philo->left_fork;
 		second_fork = philo->right_fork;
 	}
-	pthread_mutex_lock(first_lock);
+	if (is_simulation_ended(philo->data))
+		return ;
+	pthread_mutex_lock(first_fork);
 	print_status(philo, "has taken a fork");
 	pthread_mutex_lock(second_fork);
 	print_status(philo, "has taken a fork");
 
 	print_status(philo, "is eating");
+	pthread_mutex_lock(&philo->data->death_mutex);
 	philo->last_meal = get_time();
+	pthread_mutex_unlock(&philo->data->death_mutex);
 	philo->meals_eaten++;
 	precise_sleep(philo->data, philo->data->time_to_eat);
 	

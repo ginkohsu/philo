@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 04:00:47 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/14 00:54:01 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/11/25 15:44:04 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 // Forward Declaration to solve circular dependencies
@@ -44,14 +44,15 @@ typedef struct	s_data {
 	t_philo			*philos;
 } t_data;
 
-long	get_time(void);
-int		ft_atoi(const char *str);
+long long	get_time(void);
+int		ft_atoi(const char *nptr);
 void	print_status(t_philo *philo, char *status);
 bool	is_simulation_ended(t_data *data);
 void	precise_sleep(t_data *data, long milliseconds);
 bool    validate_arguments(int argc, char **argv);
-void	init_mutexes(t_data *data);
-void	init_philosophers(t_data *data);
-t_data	*init_data(int num_philos);
+bool	init_mutexes(t_data *data);
+bool	init_philosophers(t_data *data);
+t_data  *init_data(int argc, char **argv);
 void    *monitor_routine(void *arg);
 void	*philo_routine(void	*arg);
+void	cleanup(t_data *data);
