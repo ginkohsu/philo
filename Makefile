@@ -4,7 +4,7 @@ CFLAGS := -Wall -Wextra -Werror
 INC := -I./include -I.
 OBJ_DIR := obj
 
-SRCS := init.c  main.c  routine.c  utils.c monitor.c 
+SRCS := init.c  main.c  routine.c eat.c utils.c monitor.c 
 
 OBJS := $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))
 

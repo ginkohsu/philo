@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 22:33:11 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/25 15:39:32 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/12 12:55:33 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -23,10 +23,10 @@ static void	*lone_philosopher(t_philo *philo)
 
 static void	philosopher_eat(t_philo *philo)
 {
-	pthread_mutex_t *first_fork;
-	pthread_mutex_t *second_fork;
+	pthread_mutex_t	*first_fork;
+	pthread_mutex_t	*second_fork;
 
-	if(philo->id % 2 == 0)
+	if (philo->id % 2 == 0)
 	{
 		first_fork = philo->right_fork;
 		second_fork = philo->left_fork;
@@ -36,22 +36,17 @@ static void	philosopher_eat(t_philo *philo)
 		first_fork = philo->left_fork;
 		second_fork = philo->right_fork;
 	}
-	if (is_simulation_ended(philo->data))
+	if (!take_fork(philo, first_fork))
 		return ;
-	pthread_mutex_lock(first_fork);
-	print_status(philo, "has taken a fork");
-	pthread_mutex_lock(second_fork);
-	print_status(philo, "has taken a fork");
-
+	if (!take_fork(philo, second_fork))
+	{	
+		pthread_mutex_unlock(first_lock);
+		return ;
+	}
 	print_status(philo, "is eating");
-	pthread_mutex_lock(&philo->data->death_mutex);
-	philo->last_meal = get_time();
-	pthread_mutex_unlock(&philo->data->death_mutex);
-	philo->meals_eaten++;
+	update_meal(philo);
 	precise_sleep(philo->data, philo->data->time_to_eat);
-	
-	pthread_mutex_unlock(second_fork);
-	pthread_mutex_unlock(first_fork);
+	release_forks(first_fork, second_fork);
 }
 
 static void	philosopher_sleep(t_philo *philo)
@@ -65,15 +60,13 @@ static void	philosopher_think(t_philo *philo)
 	print_status(philo, "is thinking");
 }
 
-void	*philo_routine(void	*arg)
+void	*philo_routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-
 	if (philo->data->num_philos == 1)
 		return (lone_philosopher(philo));
-//	wait_for_start(philo->data);
 	while (!is_simulation_ended(philo->data))
 	{
 		philosopher_eat(philo);

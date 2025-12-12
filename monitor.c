@@ -38,7 +38,6 @@ static bool	check_all_philosophers_full(t_data *data)
 
 	if (data->must_eat_count == -1)
 		return (false);
-	
 	full_count = 0;
 	i = 0;
 	while (i < data->num_philos)
@@ -47,7 +46,6 @@ static bool	check_all_philosophers_full(t_data *data)
 			full_count++;
 		i++;
 	}
-	
 	if (full_count == data->num_philos)
 	{
 		pthread_mutex_lock(&data->death_mutex);

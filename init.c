@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 21:59:50 by jinxu             #+#    #+#             */
-/*   Updated: 2025/11/25 15:43:24 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/12 11:51:15 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,26 +34,24 @@ bool	validate_arguments(int argc, char **argv)
 bool	init_mutexes(t_data *data)
 {
 	int	i;
-	
+
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);
 	if (!data->forks)
 		return (false);
 	i = 0;
 	while (i < data->num_philos)
 	{
-		if (pthread_mutex_init(&data->forks[i], NULL) != 0) //...?
-		{
-			while ( --i >= 0)
-				pthread_mutex_destroy(&data->forks[i]);
-			free(data->forks);
+		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
 			return (false);
-		}
 		i++;
 	}
-	if (pthread_mutex_init(&data->print_mutex,NULL) !=  0)
+	data->forks_init = true;
+	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
 		return (false);
-	if (pthread_mutex_init(&data->death_mutex,NULL) != 0)
+	data->print_mutex_init = true;
+	if (pthread_mutex_init(&data->death_mutex, NULL) != 0)
 		return (false);
+	data->death_mutex_init = true;
 	return (true);
 }
 
@@ -64,6 +62,7 @@ bool	init_philosophers(t_data *data)
 	data->philos = malloc(sizeof(t_philo) * data->num_philos);
 	if (!data->philos)
 		return (false);
+	data->philos_init = true;
 	i = 0;
 	while (i < data->num_philos)
 	{
@@ -83,13 +82,11 @@ bool	init_philosophers(t_data *data)
 t_data	*init_data(int argc, char **argv)
 {
 	t_data	*data;
-	int		num_philos;
 
-	num_philos = ft_atoi(argv[1]);
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
-	data->num_philos = num_philos;
+	data->num_philos = ft_atoi(argv[1]);
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
 	data->time_to_sleep = ft_atoi(argv[4]);
@@ -98,8 +95,11 @@ t_data	*init_data(int argc, char **argv)
 		data->must_eat_count = ft_atoi(argv[5]);
 	data->simulation_end = false;
 	data->start_time = get_time();
-
-	if(!init_mutexes(data) || !init_philosophers(data))
+	data->forks_init = false;
+	data->print_mutex_init = false;
+	data->death_mutex_init = false;
+	data->philos_init = false;
+	if (!init_mutexes(data) || !init_philosophers(data))
 	{
 		cleanup(data);
 		return (NULL);
