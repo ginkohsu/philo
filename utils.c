@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 12:16:15 by jinxu             #+#    #+#             */
-/*   Updated: 2025/12/13 22:08:22 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/13 23:25:24 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,17 +51,17 @@ void	print_status(t_philo *philo, char *status)
 	long long	timestamp;
 
 	timestamp = get_time() - philo->data->start_time;
-	pthread_mutex_lock(&philo->data->print_mutex);
 	pthread_mutex_lock(&philo->data->death_mutex);
+	pthread_mutex_lock(&philo->data->print_mutex);
 	if (philo->data->simulation_end)
 	{
-		pthread_mutex_unlock(&philo->data->death_mutex);
 		pthread_mutex_unlock(&philo->data->print_mutex);
+		pthread_mutex_unlock(&philo->data->death_mutex);
 		return ;
 	}
 	printf("%lld %d %s\n", timestamp, philo->id, status);
-	pthread_mutex_unlock(&philo->data->death_mutex);
 	pthread_mutex_unlock(&philo->data->print_mutex);
+	pthread_mutex_unlock(&philo->data->death_mutex);
 }
 
 bool	is_simulation_ended(t_data *data)

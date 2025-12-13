@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 22:33:11 by jinxu             #+#    #+#             */
-/*   Updated: 2025/12/13 23:15:47 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/13 23:26:13 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -55,7 +55,7 @@ void	*philo_routine(void *arg)
 	if (philo->data->num_philos == 1)
 		return (lone_philosopher(philo));
 	if (philo -> id % 2 == 0)
-		usleep(philo ->data -> time_to_eat * 1000 / 2);
+		usleep(1000);
 	while (!is_simulation_ended(philo->data))
 	{
 		philosopher_eat(philo);
