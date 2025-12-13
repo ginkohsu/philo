@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 23:28:48 by jinxu             #+#    #+#             */
-/*   Updated: 2025/12/12 12:36:22 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/13 22:27:03 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -26,13 +26,17 @@ void	cleanup(t_data *data)
 			i++;
 		}
 		free(data->forks);
+		data->forks = NULL;
 	}
 	if (data->print_mutex_init)
 		pthread_mutex_destroy(&data->print_mutex);
 	if (data->death_mutex_init)
 		pthread_mutex_destroy(&data->death_mutex);
 	if (data->philos_init)
+	{
 		free(data->philos);
+		data->philos = NULL;
+	}
 	free(data);
 }
 
@@ -61,11 +65,11 @@ static bool	create_philos_threads(t_data *data)
 	return (true);
 }
 
-static bool	create_monitor_thread(pthread_t monitor_thread, t_data *data)
+static bool	create_monitor_thread(pthread_t *monitor_thread, t_data *data)
 {
 	int	i;
 
-	if (pthread_create(&monitor_thread, NULL, monitor_routine, data) != 0)
+	if (pthread_create(monitor_thread, NULL, monitor_routine, data) != 0)
 	{
 		data->simulation_end = true;
 		i = 0;
@@ -99,8 +103,8 @@ int	main(int argc, char **argv)
 
 	if (argc < 5 || argc > 6)
 	{
-		printf("Usage: ./philo number_of_philosophers time_to_die 
-				time_to_eat time_to_sleep [must_eat_count]\n");
+		printf("Usage: ./philo number_of_philosophers time_to_die"
+			" time_to_eat time_to_sleep [must_eat_count]\n");
 		return (1);
 	}
 	if (!validate_arguments(argc, argv))
@@ -108,7 +112,8 @@ int	main(int argc, char **argv)
 	data = init_data(argc, argv);
 	if (!data)
 		return (1);
-	if (!create_philos_threads(data) || !create_monitor_thread(monitor_thread))
+	if (!create_philos_threads(data) || !create_monitor_thread(&monitor_thread,
+			data))
 	{
 		cleanup(data);
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 12:16:15 by jinxu             #+#    #+#             */
-/*   Updated: 2025/12/12 11:08:42 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/13 22:08:22 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ long long	get_time(void)
 
 int	ft_atoi(const char *nptr)
 {
-	int	sign;
-	int	nb;
+	int			sign;
+	long long	nb;
 
 	sign = 1;
 	nb = 0;
@@ -39,9 +39,11 @@ int	ft_atoi(const char *nptr)
 	while (*nptr >= '0' && *nptr <= '9')
 	{
 		nb = nb * 10 + (*nptr - '0');
+		if (nb * sign > INT_MAX || nb * sign < INT_MIN)
+			return (-1);
 		nptr++;
 	}
-	return (nb * sign);
+	return ((int)(nb * sign));
 }
 
 void	print_status(t_philo *philo, char *status)
@@ -49,15 +51,16 @@ void	print_status(t_philo *philo, char *status)
 	long long	timestamp;
 
 	timestamp = get_time() - philo->data->start_time;
+	pthread_mutex_lock(&philo->data->print_mutex);
 	pthread_mutex_lock(&philo->data->death_mutex);
 	if (philo->data->simulation_end)
 	{
 		pthread_mutex_unlock(&philo->data->death_mutex);
+		pthread_mutex_unlock(&philo->data->print_mutex);
 		return ;
 	}
-	pthread_mutex_unlock(&philo->data->death_mutex);
-	pthread_mutex_lock(&philo->data->print_mutex);
 	printf("%lld %d %s\n", timestamp, philo->id, status);
+	pthread_mutex_unlock(&philo->data->death_mutex);
 	pthread_mutex_unlock(&philo->data->print_mutex);
 }
 
@@ -71,15 +74,20 @@ bool	is_simulation_ended(t_data *data)
 	return (ended);
 }
 
-void	precise_sleep(t_data *data, long milliseconds)
+void	precise_sleep(t_data *data, int milliseconds)
 {
-	long	start;
+	long long	start;
+	long long	elapsed;
 
 	start = get_time();
-	while (get_time() - start < milliseconds)
+	while (!is_simulation_ended(data))
 	{
-		if (is_simulation_ended(data))
+		elapsed = get_time() - start;
+		if (elapsed >= milliseconds)
 			break ;
-		usleep(100);
+		if (milliseconds - elapsed > 1)
+			usleep(1000);
+		else
+			usleep((milliseconds - elapsed) * 1000);
 	}
 }

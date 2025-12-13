@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 04:00:47 by jinxu             #+#    #+#             */
-/*   Updated: 2025/12/12 13:00:34 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/13 20:53:08 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ typedef struct s_philo
 typedef struct s_data
 {
 	int					num_philos;
-	long				time_to_die;
-	long				time_to_eat;
-	long				time_to_sleep;
+	int					time_to_die;
+	int					time_to_eat;
+	int					time_to_sleep;
 	int					must_eat_count;
 	long long			start_time;
 	bool				simulation_end;
@@ -54,7 +54,7 @@ long long				get_time(void);
 int						ft_atoi(const char *nptr);
 void					print_status(t_philo *philo, char *status);
 bool					is_simulation_ended(t_data *data);
-void					precise_sleep(t_data *data, long milliseconds);
+void					precise_sleep(t_data *data, int milliseconds);
 bool					validate_arguments(int argc, char **argv);
 bool					init_mutexes(t_data *data);
 bool					init_philosophers(t_data *data);
@@ -66,6 +66,3 @@ bool					take_fork(t_philo *philo, pthread_mutex_t *fork);
 void					update_meal(t_philo *philo);
 void					release_forks(pthread_mutex_t *first,
 							pthread_mutex_t *second);
-
-
-

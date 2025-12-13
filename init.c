@@ -6,7 +6,7 @@
 /*   By: jinxu <jinxu@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 21:59:50 by jinxu             #+#    #+#             */
-/*   Updated: 2025/12/12 11:51:15 by jinxu            ###   ########.fr       */
+/*   Updated: 2025/12/13 22:25:29 by jinxu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ bool	validate_arguments(int argc, char **argv)
 		num = ft_atoi(argv[i]);
 		if (num <= 0)
 		{
-			printf("Error: All arguments must be positive integers\n");
+			printf("Error: Invalid input\n");
 			return (false);
 		}
 		i++;
